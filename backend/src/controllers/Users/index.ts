@@ -14,14 +14,28 @@ class User {
     async getAllUsers(req: Request, res: Response) {
 
         try {
-            const getUser = await prisma?.user.findMany({})
+            const getUser = await prisma?.user.findMany({
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    avatar:true,
+                    role: true,
+                    phone:true,
+                    creci: true,
+                    creciUF: true,
+                    houses: true
+
+                }
+
+            })
 
             if ((getUser?.length as any) <= 0) {
 
                 return res.status(404).json({ message: "Nenhum usuário cadastrado!" })
 
             } else {
-                console.log("Aqui tem user")
+               
                 return res.status(200).json(getUser)
             }
         } catch (error) {
@@ -35,12 +49,22 @@ class User {
     // Retorna um usuario especifico
     async getOneUser(req: Request, res: Response) {
         const { slug } = req.params
-
+        console.log(slug)
         try {
             const getOneUser = await prisma?.user.findUnique({
                 where: {
                     id: Number(slug)
                 },
+                select:{
+                    id:true,
+                    name:true,
+                    email:true,
+                    avatar:true,
+                    phone:true,
+                    creci:true,
+                    creciUF:true,
+                    role:true,
+                }
 
             })
             if (!getOneUser) {
@@ -57,53 +81,57 @@ class User {
     }
     //Cria um usuario
     async createUser(req: Request, res: Response) {
+        const {name,email,password,phone,creci,creciUF,role,avatar} = req.body
+     
         try {
             const createUser = await prisma?.user.create({
-                data: {
-                    name: "Tiago",
-                    email: "admin@gmail.com",
-                    creci: "123456",
-                    creciUF: "RS",
-                    role: "ADMIN",
-                    password: "123456"
-
+                data:{
+                name,email,password,phone,creci,creciUF,role,avatar
+                     
                 }
             })
-            return res.status(201).json({ message: "Usuário criado com sucesso!" })
+            return res.status(200).json({ message: "Usuário criado com sucesso!" })
         } catch (error) {
+            console.log(error)
             return this?.handleError(error, res)
         }
         finally {
             return this?.handleDisconnect()
         }
+        
     }
     //Atualiza um usuario especifico 
     async updateUser(req: Request, res: Response,) {
-        const { id, name, email, password, role, creci, creciUF } = req.body
-        if (!id) {
+        const {slug,name,email,password,phone,creci,creciUF,role,avatar} = req.body
+     
+        if (!slug) {
             return res.status(403).json({ message: "Não foi possível encontrar o usuário!" })
         }
         try {
             const update = await prisma?.user.update({
                 where: {
-                    id: Number(id)
+                    id: Number(slug)
                 },
                 data: {
-                    name, email, password, role, creci, creciUF, updateAt: new Date()
+                    name,email,password,phone,creci,creciUF,role,avatar,
+                    updateAt: new Date()
                 }
             })
             return res.status(200).json({ message: "Usuário atualizado com sucesso!" })
 
         } catch (error) {
+            console.log(error)
             return this?.handleError(error, res)
         }
         finally {
             return this?.handleDisconnect()
         }
+        
     }
     //Deleta um usuario especifico
     async deleteUser(req: Request, res: Response) {
         const { id } = req.body
+     
         if (!id) {
             return res.status(403).json({ message: "Não foi possível encontrar o usuário!" })
         }
@@ -117,6 +145,7 @@ class User {
             return res.status(200).json({ message: "Usuário deletado com sucesso!" })
 
         } catch (error) {
+            console.log(error)
             return this?.handleError(error, res)
         }
         finally {

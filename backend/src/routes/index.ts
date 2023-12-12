@@ -4,6 +4,7 @@ import Search from "../controllers/Search/serachItems"
 import UsersController from "../controllers/Users"
 import HousesController from "../controllers/Houses"
 import CategoriesController from "../controllers/Categories"
+import UploadController from "../controllers/Upload"
 const router = Router()
 
 //Routes Users
@@ -11,6 +12,7 @@ router.get("/users", UsersController.getAllUsers)
 router.get("/users/:slug",UsersController.getOneUser)
 router.post("/user-create", UsersController.createUser)
 router.put("/user-update",UsersController.updateUser)
+router.delete("/user-delete",UsersController.deleteUser)
 
 //Routes House
 router.get("/houses", HousesController.getAllHouses)
@@ -27,7 +29,13 @@ router.put("/update-category",CategoriesController.updateCategory)
 router.delete("/delete-category",CategoriesController.deleteCategory)
 
 
+ 
+
 //Route Search
 router.get("/search", Search)
+
+//Routes upload
+router.post("/perfil",UploadController.perfilProfile )
+router.post("/files-imovel",UploadController.imageImoveis )
 
 export default router;
