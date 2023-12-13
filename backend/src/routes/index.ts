@@ -1,5 +1,5 @@
 import  { Router ,Request,Response} from "express"
-
+import Signin from "../controllers/Auth/signin"
 import Search from "../controllers/Search/serachItems"
 import UsersController from "../controllers/Users"
 import HousesController from "../controllers/Houses"
@@ -29,7 +29,8 @@ router.put("/update-category",CategoriesController.updateCategory)
 router.delete("/delete-category",CategoriesController.deleteCategory)
 
 
- 
+ //Route Auth
+ router.post("/signin",Signin)
 
 //Route Search
 router.get("/search", Search)

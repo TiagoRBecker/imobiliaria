@@ -42,6 +42,7 @@ model Houses {
   bedrooms   String
   UF         String
   city       String
+  address    String
   district   String
   catId      Int
   meters     String

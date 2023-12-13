@@ -1,4 +1,5 @@
 import { Response, Request } from "express";
+import bcrypt from "bcrypt"
 import prisma from "../../server/prisma";
 class User {
     //Funçao para tratar dos erros no servidor
@@ -49,7 +50,7 @@ class User {
     // Retorna um usuario especifico
     async getOneUser(req: Request, res: Response) {
         const { slug } = req.params
-        console.log(slug)
+        
         try {
             const getOneUser = await prisma?.user.findUnique({
                 where: {
@@ -81,12 +82,23 @@ class User {
     }
     //Cria um usuario
     async createUser(req: Request, res: Response) {
+       
         const {name,email,password,phone,creci,creciUF,role,avatar} = req.body
+       
+        const hashPassword =  await bcrypt.hash(password, Number(process.env.SALT) ) 
+      
      
         try {
             const createUser = await prisma?.user.create({
                 data:{
-                name,email,password,phone,creci,creciUF,role,avatar
+                name,
+                email,
+                password:hashPassword,
+                phone,
+                creci,
+                creciUF,
+                role,
+                avatar
                      
                 }
             })
@@ -103,7 +115,8 @@ class User {
     //Atualiza um usuario especifico 
     async updateUser(req: Request, res: Response,) {
         const {slug,name,email,password,phone,creci,creciUF,role,avatar} = req.body
-     
+      
+        const hashPassword =  await bcrypt.hash(password, Number(process.env.SALT) ) 
         if (!slug) {
             return res.status(403).json({ message: "Não foi possível encontrar o usuário!" })
         }
@@ -113,7 +126,7 @@ class User {
                     id: Number(slug)
                 },
                 data: {
-                    name,email,password,phone,creci,creciUF,role,avatar,
+                    name,email,password:hashPassword,phone,creci,creciUF,role,avatar,
                     updateAt: new Date()
                 }
             })
@@ -126,6 +139,7 @@ class User {
         finally {
             return this?.handleDisconnect()
         }
+        
         
     }
     //Deleta um usuario especifico

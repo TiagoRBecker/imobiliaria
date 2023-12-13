@@ -54,11 +54,11 @@ class Imobiliaria {
 
     //Cria uma house
     async createHouse(req: Request, res: Response) {
-        const { code, descript, price, bedrooms, UF, city, district, catId, meters, garage, suite, images, userId } = req.body
+        const { code, descript, price, bedrooms, UF,address, city, district, catId, meters, garage, suite, images, userId } = req.body
         try {
             const create = await prisma?.houses.create({
                 data: {
-                    code, descript, price, bedrooms, UF, city, district, catId, meters, garage, suite, images, userId
+                    code, descript, price, bedrooms, UF,address, city, district, catId, meters, garage, suite, images, userId
                 }
             })
             return res.status(200).json({ create, message: "Imóvel criado com sucesso!" })
@@ -74,7 +74,7 @@ class Imobiliaria {
     // Atualiza uma house especifica
     async updateHouse(req: Request, res: Response) {
 
-        const { id, code, descript, price, bedrooms, UF, city, district, catId, meters, garage, suite, images, userId } = req.body
+        const { id, code, descript, price,address, bedrooms, UF, city, district, catId, meters, garage, suite, images, userId } = req.body
         if (!id) {
             return res.status(404).json({ message: "Não foi possivel atualizar o imóvel!" })
         }
@@ -84,7 +84,7 @@ class Imobiliaria {
                     id: Number(id)
                 },
                 data: {
-                    code, descript, price, bedrooms, UF, city, district, catId, meters, garage, suite, images, userId, updateAt: new Date()
+                    code, descript, price, bedrooms, UF,address, city, district, catId, meters, garage, suite, images, userId, updateAt: new Date()
                 }
             })
             return res.status(200).json({ message: "Imóvel atualizado com sucesso!" })
