@@ -47,6 +47,39 @@ class User {
         }
 
     }
+    //Usuario logado
+    async getUserLogged(req: Request, res: Response) {
+        const { id} = req.user
+        
+        try {
+            const getOneUser = await prisma?.user.findUnique({
+                where: {
+                    id: Number(id)
+                },
+                select:{
+                    id:true,
+                    name:true,
+                    email:true,
+                    avatar:true,
+                    phone:true,
+                    creci:true,
+                    creciUF:true,
+                    role:true,
+                }
+
+            })
+            if (!getOneUser) {
+                return res.status(200).json({ message: "Usuário não encontrado" })
+            }
+            return res.status(200).json(getOneUser)
+
+        } catch (error) {
+            return this?.handleError(error, res)
+        }
+        finally {
+            return this?.handleDisconnect()
+        }
+    }
     // Retorna um usuario especifico
     async getOneUser(req: Request, res: Response) {
         const { slug } = req.params

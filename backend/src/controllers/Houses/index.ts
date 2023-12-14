@@ -16,7 +16,11 @@ class Imobiliaria {
     async getAllHouses(req: Request, res: Response) {
 
         try {
-            const getHouses = await prisma?.houses.findMany({})
+            const getHouses = await prisma?.houses.findMany({
+                include:{
+                    categories:true
+                }
+            })
             if (!getHouses || getHouses.length <= 0) {
                 return res.status(404).json({ message: "Nenhum imóvel cadastrado!" })
             } else {
@@ -35,7 +39,23 @@ class Imobiliaria {
         const { slug } = req.params
         try {
             const getOneHouse = await prisma?.houses.findUnique({
-                where: { id: Number(slug) }
+                where: { 
+                    id: Number(slug)
+                 },
+                 include:{
+                    User:{
+                        select:{
+                            avatar:true,
+                            email:true,
+                            name:true,
+                            creci:true,
+                            creciUF:true,
+                            phone:true,
+
+                        }
+                    },
+                    categories:true
+                 }
             })
             if (!getOneHouse) {
                 return res.status(404).json({ message: "Nenhum imóvel encontrado!" })
@@ -43,10 +63,10 @@ class Imobiliaria {
             return res.status(200).json(getOneHouse)
 
         } catch (error) {
-            return this.handleError(error, res)
+            return this?.handleError(error, res)
         }
         finally {
-            return this.handleDisconnect()
+            return this?.handleDisconnect()
         }
 
     }
@@ -54,20 +74,26 @@ class Imobiliaria {
 
     //Cria uma house
     async createHouse(req: Request, res: Response) {
-        const { code, descript, price, bedrooms, UF,address, city, district, catId, meters, garage, suite, images, userId } = req.body
+        const { code, descript, price, bedrooms, UF,address, city, district, categories, meters, garage, suite, images, userId } = req.body
+         console.log("aqui ta o usuario",req.user.id)
+         const formatedPrice = parseFloat(price.replace(/[,.]/g, ''));
         try {
             const create = await prisma?.houses.create({
                 data: {
-                    code, descript, price, bedrooms, UF,address, city, district, catId, meters, garage, suite, images, userId
+                    code:"Casa1", descript, price:formatedPrice, bedrooms, UF,address, city, district, catId:Number(categories), meters, garage, suite, images, userId:req.user?.id
                 }
             })
-            return res.status(200).json({ create, message: "Imóvel criado com sucesso!" })
+            return res.status(200).json({message: "Imóvel criado com sucesso!" })
         } catch (error) {
+             console.log(error)
             return this?.handleError(error, res)
         }
         finally {
             return this?.handleDisconnect()
         }
+        
+        
+        
 
 
     }
